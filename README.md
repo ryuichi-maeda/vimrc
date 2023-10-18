@@ -2,9 +2,19 @@
 
 This is my custom .vimrc file.
 
-## Environment Variables
+## Change .vimrc file path
 
-You have to set the followings to the end of ~/.bashrc file.
+### Pattern1. symbolic link
+
+This is very simple way to change .vimrc file path.
+
+```
+ln -s /path/to/this/dir/.vimrc ~/.vimrc
+```
+
+### Pattern2. environment Variables
+
+Set the followings to the end of ~/.bashrc file.
 
 ```
 export VIMINIT='source /path/to/this/dir/.vimrc'
