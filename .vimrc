@@ -19,7 +19,7 @@ set backspace=indent,eol,start
 " 行番号を表示
 set number
 " 相対的な行番号を表示
-" set relativenumber
+set relativenumber
 " 現在の行を強調表示
 set cursorline
 " 現在の行を強調表示（縦）
@@ -45,7 +45,8 @@ nnoremap j gj
 nnoremap k gk
 " シンタックスハイライトの有効化
 syntax enable
-colorscheme delek
+" colorscheme delek
+set background=dark
 
 " キーマップ
 
@@ -74,6 +75,23 @@ set wrapscan
 set hlsearch
 " ESC連打でハイライト解除
 nmap <Esc><Esc> :nohlsearch<CR><Esc>
+
+
+"Use 24-bit (true-color) mode in Vim/Neovim when outside tmux.
+"If you're using tmux version 2.2 or later, you can remove the outermost $TMUX check and use tmux's 24-bit color support
+"(see < http://sunaku.github.io/tmux-24bit-color.html#usage > for more information.)
+if (empty($TMUX))
+  if (has("nvim"))
+    "For Neovim 0.1.3 and 0.1.4 < https://github.com/neovim/neovim/pull/2198 >
+    let $NVIM_TUI_ENABLE_TRUE_COLOR=1
+  endif
+  "For Neovim > 0.1.5 and Vim > patch 7.4.1799 < https://github.com/vim/vim/commit/61be73bb0f965a895bfb064ea3e55476ac175162 >
+  "Based on Vim patch 7.4.1770 (`guicolors` option) < https://github.com/vim/vim/commit/8a633e3427b47286869aa4b96f2bfc1fe65b25cd >
+  " < https://github.com/neovim/neovim/wiki/Following-HEAD#20160511 >
+  if (has("termguicolors"))
+    set termguicolors
+  endif
+endif
 
 
 " リーダーキー
@@ -130,4 +148,100 @@ endfunction
 
 
 autocmd BufWritePre * call CleanUpFile()
+
+" NeoBundle
+if has('vim_starting')
+    " 初回起動時のみruntimepathにNeoBundleのパスを指定する
+    set runtimepath+=~/.vim/bundle/neobundle.vim/
+
+    " NeoBundleが未インストールであればgit cloneする・・・・・・①
+    if !isdirectory(expand("~/.vim/bundle/neobundle.vim/"))
+        echo "install NeoBundle..."
+        :call system("git clone git@github.com:Shougo/neobundle.vim.git ~/.vim/bundle/neobundle.vim")
+    endif
+endif
+
+call neobundle#begin(expand('~/.vim/bundle/'))
+
+" インストールするVimプラグインを以下に記述
+" NeoBundle自身を管理
+NeoBundleFetch 'Shougo/neobundle.vim'
+"----------------------------------------------------------
+" ここに追加したいVimプラグインを記述する・・・・・・②
+" ステータスラインの表示内容強化
+NeoBundle 'itchyny/lightline.vim'
+
+" 空白文字の可視化
+NeoBundle 'bronson/vim-trailing-whitespace'
+" インデントの可視化
+NeoBundle 'Yggdroot/indentline'
+
+" 多機能セレクタ
+NeoBundle 'ctrlpvim/ctrlp.vim'
+" CtrlPの拡張プラグイン. 関数
+NeoBundle 'tacahiroy/ctrlp-funky'
+" CtrlPの拡張プラグイン. コマンド履歴検索
+NeoBundle 'suy/vim-ctrlp-commandline'
+
+" Color Scheme
+" Onedark
+" NeoBundle 'joshdick/onedark.vim'
+" Tokyo Night
+" NeoBundle 'ghifarit53/tokyonight-vim'
+" Sonokai
+NeoBundle 'sainnhe/sonokai'
+" Solarized8
+" NeoBundle 'lifepillar/vim-solarized8'
+
+"----------------------------------------------------------
+call neobundle#end()
+
+" ファイルタイプ別のVimプラグイン/インデントを有効にする
+filetype plugin indent on
+
+" 未インストールのVimプラグインがある場合、インストールするかどうかを尋ねてくれるようにする設定・・・・・・③
+NeoBundleCheck
+
+"----------------------------------------------------------
+" インストールしたプラグインの設定
+" ステータスラインの表示内容強化
+set showmode
+set ruler
+
+" CtrlPの設定
+let g:ctrlp_match_window = 'order:ttb,min:20,max:20,results:100' " マッチウインドウの設定. 「下部に表示, 大きさ20行で固定, 検索結果100件」
+let g:ctrlp_show_hidden = 1 " .(ドット)から始まるファイルも検索対象にする
+let g:ctrlp_types = ['fil'] "ファイル検索のみ使用
+let g:ctrlp_extensions = ['funky', 'commandline'] " CtrlPの拡張として「funky」と「commandline」を使用
+
+" CtrlPCommandLineの有効化
+command! CtrlPCommandLine call ctrlp#init(ctrlp#commandline#id())
+
+" CtrlPFunkyの有効化
+let g:ctrlp_funky_matchtype = 'path'
+
+" Tokyo Night theme
+set termguicolors
+" let g:tokyonight_style = 'night'
+" let g:tokyonight_enable_italic = 1
+" let g:tokyonight_transparent_background = 0
+" let g:lightline = {'colorscheme' : 'tokyonight'}
+" let g:airline_theme = 'tokyonight'
+" colorscheme tokyonight
+
+" Sonokai theme
+let g:sonokai_style='atlantis'
+let g:sonokai_disable_italic_comment=0
+let g:sonokai_transparent_background=1
+let g:sonokai_diagnostic_test_highlight=1
+let g:sonokai_diagnostic_line_highlight=1
+let g:lightline = {'colorscheme' : 'sonokai'}
+let g:airline_theme = 'sonokai'
+colorscheme sonokai
+
+" Solarized8
+" let g:solarized_visibility='normal'
+" let g:solarized_statusline='flat'
+" let g:solarized_termtrans=1
+" colorscheme solarized8
 
